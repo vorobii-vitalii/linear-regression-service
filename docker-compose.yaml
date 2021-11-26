@@ -1,0 +1,32 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+    networks:
+      - shared_network
+    restart: unless-stopped
+  app:
+    build: .
+    ports:
+      - "9050:8080"
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: test
+      DB_PASSWORD: test
+      DB_URL: jdbc:postgresql://postgres:5432/test
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
